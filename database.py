@@ -18,6 +18,18 @@ class CompanyFinance(pw.Model):
         database = database
         table_name = "company_finances"
 
+    def to_dict(self):
+        return {
+            "company": self.company,
+            "date": self.date.strftime("%Y-%m-%d"),
+            "open": self.open,
+            "high": self.high,
+            "low": self.low,
+            "close": self.close,
+            "adj_close": self.adj_close,
+            "volume": self.volume,
+        }
+
 
 with database.atomic():
     database.create_tables([CompanyFinance])
