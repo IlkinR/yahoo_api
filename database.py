@@ -1,6 +1,7 @@
 import peewee as pw
+import settings
 
-database = pw.SqliteDatabase("comp_finances.db")
+database = pw.SqliteDatabase(settings.DATABASE_NAME)
 
 
 class CompanyFinance(pw.Model):

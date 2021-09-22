@@ -2,8 +2,7 @@ import time
 from typing import List
 import pandas as pd
 from database import CompanyFinance, database
-
-DATA_DOWNLOAD_URL_TEMPLATE = "https://query1.finance.yahoo.com/v7/finance/download/{title}?period1={start}&period2={end}&interval={interval}&events=history&includeAdjustedClose=true"
+import settings
 
 
 def save_company_finances(
@@ -12,7 +11,7 @@ def save_company_finances(
     end: int = int(time.time()),
     interval: str = "1d",
 ) -> None:
-    download_url = DATA_DOWNLOAD_URL_TEMPLATE.format(
+    download_url = settings.DATA_DOWNLOAD_URL_TEMPLATE.format(
         title=company_title, start=start, end=end, interval=interval
     )
     company_dataframe = pd.read_csv(download_url)
@@ -34,7 +33,6 @@ def extract_company_finances(
         company_mask = CompanyFinance.company == company_name
         by_company = CompanyFinance.select().where(company_mask)
         if by_company.count() == 0:
-            print("downloading")
             # there is no records for company, so we'll load them
             save_company_finances(database, company_name)
 
