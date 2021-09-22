@@ -1,18 +1,17 @@
 import time
+from typing import List
 import pandas as pd
-import peewee as pw
 from database import CompanyFinance, database
 
 DATA_DOWNLOAD_URL_TEMPLATE = "https://query1.finance.yahoo.com/v7/finance/download/{title}?period1={start}&period2={end}&interval={interval}&events=history&includeAdjustedClose=true"
 
 
 def save_company_finances(
-    database: pw.SqliteDatabase,
     company_title: str,
     start: int = 0,
     end: int = int(time.time()),
     interval: str = "1d",
-):
+) -> None:
     download_url = DATA_DOWNLOAD_URL_TEMPLATE.format(
         title=company_title, start=start, end=end, interval=interval
     )
@@ -29,8 +28,8 @@ def save_company_finances(
 
 
 def extract_company_finances(
-    database: pw.SqliteDatabase, company_name: str, records: int = 50
-):
+    company_name: str, records: int = 50
+) -> List[CompanyFinance]:
     with database.atomic():
         company_mask = CompanyFinance.company == company_name
         by_company = CompanyFinance.select().where(company_mask)
@@ -45,7 +44,7 @@ def extract_company_finances(
         return by_company[:records]
 
 
-def extract_all_finances(database: pw.SqliteDatabase, records: int = None):
+def extract_all_finances(records: int = None) -> List[CompanyFinance]:
     with database.atomic():
         if records is None:
             max_companies = CompanyFinance.select().count()
