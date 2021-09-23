@@ -1,18 +1,17 @@
 import time
-from typing import List
+from typing import Dict, List
 import pandas as pd
-from database import CompanyFinance, database
+import peewee as pw
+from database import CompanyFinance
 import settings
 
+database = pw.SqliteDatabase(settings.DATABASE_NAME)
 INTERVALS = ("1d", "1wk", "1m")
 
 
-def save_company_finances(
-    company: str,
-    start: int = 0,
-    end: int = int(time.time()),
-    interval: str = "1d",
-) -> None:
+def fetch_company_records(
+    company: str, start: int = 0, end: int = int(time.time()), interval: str = "1d"
+) -> List[Dict]:
     if interval not in INTERVALS:
         valid_intervals_msg = f"{', '.join(INTERVALS[:-1])} or {INTERVALS[1]}"
         raise ValueError(f"Invalid interval value. Should be {valid_intervals_msg}")
@@ -27,7 +26,13 @@ def save_company_finances(
     renaming_data = dict(zip(company_dataframe.columns, inserted_cols))
     company_dataframe = company_dataframe.rename(renaming_data, axis=1)
 
-    company_data = company_dataframe.to_dict(orient="records")
+    return company_dataframe.to_dict(orient="records")
+
+
+def save_company_finances(
+    company: str, start: int = 0, end: int = int(time.time()), interval: str = "1d"
+) -> None:
+    company_data = fetch_company_records(company, start, end, interval)
     with database.atomic():
         CompanyFinance.insert_many(company_data).execute()
 
