@@ -4,6 +4,8 @@ import pandas as pd
 from database import CompanyFinance, database
 import settings
 
+INTERVALS = ("1d", "1wk", "1m")
+
 
 def save_company_finances(
     company: str,
@@ -11,6 +13,10 @@ def save_company_finances(
     end: int = int(time.time()),
     interval: str = "1d",
 ) -> None:
+    if interval not in INTERVALS:
+        valid_intervals_msg = f"{', '.join(INTERVALS[:-1])} or {INTERVALS[1]}"
+        raise ValueError(f"Invalid interval value. Should be {valid_intervals_msg}")
+
     download_url = settings.DATA_DOWNLOAD_URL_TEMPLATE.format(
         title=company, start=start, end=end, interval=interval
     )
