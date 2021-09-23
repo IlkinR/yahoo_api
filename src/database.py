@@ -31,5 +31,6 @@ class CompanyFinance(pw.Model):
         }
 
 
-with database.atomic():
-    database.create_tables([CompanyFinance])
+if __name__ == "__main__":
+    with database.atomic():
+        database.create_tables([CompanyFinance])
