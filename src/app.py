@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 import logic
 
 api = FastAPI()
@@ -16,3 +17,7 @@ def get_all_finances(company: str, records: int = 100):
     finances = logic.extract_company_finances(company=company, records=records)
     finances = [finance.to_dict() for finance in finances]
     return {"items": finances, "records": records}
+
+
+if __name__ == "__main__":
+    uvicorn.run(api)
