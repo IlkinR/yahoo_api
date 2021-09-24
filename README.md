@@ -9,7 +9,7 @@ pip install -r requirements.txt
 ```
 2. Create a database for the application. It'll be created in the root folder together with **src**
 ```shell
-python .\database.py
+python src/database.py
 ```
 3. Run the api
 ```shell
